@@ -2,6 +2,7 @@ import gym
 import random
 import stable_baselines3
 from stable_baselines3.common.env_checker import check_env
+import numpy as np
 
 from gym import Env, spaces
 
@@ -17,12 +18,14 @@ class IGT(Env):
         self.agent_bank = 2000
         self.cards = 100
         self.action_space = spaces.Discrete(4)
-        self.observation_space = spaces.
+        self.observation_space = spaces.MultiDiscrete([5000, 101])
         return
 
     def reset(self):
         self.agent_bank = 2000
         self.cards = 100
+        return np.array([self.agent_bank, self.cards])
+
 
     def step(self, action):
         reward = 0
@@ -41,11 +44,7 @@ class IGT(Env):
         self.agent_bank += reward
         done = bool(self.agent_bank <= 0 or self.cards == 0)
         info = {}
-        return self.agent_bank, reward, done, info
+        return np.array([self.agent_bank, self.cards]), reward, done, info
     
     def render(self):
         print(self.agent_bank)
-
-env = GoLeftEnv()
-# If the environment don't follow the interface, an error will be thrown
-check_env(env, warn=True)
