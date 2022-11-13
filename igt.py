@@ -18,14 +18,13 @@ class IGT(Env):
         self.agent_bank = 2000
         self.cards = 100
         self.action_space = spaces.Discrete(4)
-        self.observation_space = spaces.MultiDiscrete([5000, 2, 151, 101])
+        self.observation_space = spaces.Tuple((spaces.Box(0, 5000, shape=(1,), dtype=int),spaces.Discrete(2),spaces.Box(-150, 0, shape=(1,), dtype=int),spaces.Box(0, 100, shape=(1,), dtype=int)))
         return
 
     def reset(self):
         self.agent_bank = 2000
         self.cards = 100
-        reward = 0
-        return np.array([self.agent_bank, 0, 0, self.cards])
+        return ([self.agent_bank], 0, [0], [self.cards])
 
 
     def step(self, action):
@@ -51,11 +50,12 @@ class IGT(Env):
         self.agent_bank += reward
         done = bool(self.agent_bank <= 0 or self.cards == 0)
         info = {}
-        return np.array([self.agent_bank, fee, fee_amount, self.cards]), reward, done, info
+        return ([[self.agent_bank], fee, [fee_amount], [self.cards]]), reward, done, info
     
     def render(self):
         print(self.agent_bank)
 
 env = IGT()
+print(env.observation_space.sample())
 # If the environment don't follow the interface, an error will be thrown
 check_env(env, warn=True)
